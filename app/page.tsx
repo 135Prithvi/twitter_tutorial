@@ -1,13 +1,17 @@
 import { SignUp } from "@clerk/nextjs";
 import Link from "next/link";
 import { currentUser } from '@clerk/nextjs';
+import { db } from "./db";
+import { tweets } from "./db/schema";
 export const runtime = "nodejs"
 export default async function Home() {
   const user = await currentUser();
   if (!user) return <div>Not logged in</div>;
+  const feed = await db.select().from(tweets)
+  console.log(feed)
   const data = [
     {
-      id: "fd",
+      id: BigInt(4232323232),
       author: {
         name: "elonmusk",
         image:
@@ -17,7 +21,7 @@ export default async function Home() {
       content: "This is the first post.",
     },
     {
-      id: "szgf",
+      id: BigInt(4257857532),
       author: {
         name: "TateTheTalisman",
         image:
@@ -106,28 +110,28 @@ export default async function Home() {
           </form>
         </div>
         <div className="flex w-full flex-col">
-          {[...data]?.map((post) => (
+          {[...feed]?.map((post) => (
             <div
               key={post.id}
               className="border-b border-slate-200 border-opacity-40 p-3"
             >
               <div className="flex gap-2">
-                <Link href={`${post.author.name} `} shallow className="h-10">
+                <Link href={`${post.username} `} shallow className="h-10">
                   <img
-                    src={post.author.image as string}
+                    src={"post.author.image as string"}
                     alt="twitter user"
                     className=" h-10 w-10 rounded-full"
                   />
                 </Link>
                 <div className="flex flex-col">
                   <span className="align-text-top text-xs opacity-50">
-                    <Link href={`${post.author.name} `}>
-                      {`@` + post.author.name?.split(" ").join("")}
+                    <Link href={`${post.username} `}>
+                      {`@` + post.username?.split(" ").join("")}
                     </Link>
                     <span className="font-thin">{` · 20 days ago`}</span>
                   </span>
 
-                  <Link href={`/${post.author.name}/status/${post.id} `}>
+                  <Link href={`/${post.username}/status/${post.id} `}>
                     <span>{post.content}</span>
                   </Link>
                   <div className="flex space-x-5 items-end mt-2">
