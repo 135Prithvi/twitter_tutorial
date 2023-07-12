@@ -19,6 +19,6 @@ export default async function Jp() {
     },
     // Add more fake data items as needed
   ];
-  const res = await db.insert(tweets).values(data);
+  // const res = await db.insert(tweets).values(data);
   return "ok";
 }

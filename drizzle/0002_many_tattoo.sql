@@ -1,0 +1,1 @@
+ALTER TABLE `tweets` MODIFY COLUMN `tweet_id` bigint AUTO_INCREMENT NOT NULL;

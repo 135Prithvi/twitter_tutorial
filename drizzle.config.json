@@ -1,6 +1,9 @@
 {
-    "out": "./migrations-folder",
+    "out": "./drizzle",
     "schema": "./app/db/schema.ts",
-    "breakpoints": false,
-    "driver":""
+    "connectionString": "mysql://42wx4z2zwv7d8vfblpus:pscale_pw_GGbtwQCAsQ6RC7byjg8XXnuOyA3nOqRgPC69b16m4tL@aws.connect.psdb.cloud/twitter?sslaccept=strict",
+    "breakpoints": true,
+    "driver":"mysql2"
+
+   
   }

@@ -1,0 +1,1 @@
+ALTER TABLE `tweets` ADD `created_at` timestamp DEFAULT (now());
