@@ -7,7 +7,7 @@ import TweetComposer from "./components/TweetComposer";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import Liked from "./components/Liked";
-import { isNotNull, isNull } from "drizzle-orm";
+import { asc, desc, isNotNull, isNull } from "drizzle-orm";
 dayjs.extend(relativeTime);
 export const runtime = "nodejs";
 export default async function Home() {
@@ -16,7 +16,8 @@ export default async function Home() {
   // const feed = await db.select().from(tweets).where(eq(tweets.replies,null));
   const feed = await db.query.tweets.findMany({
     where: isNull(tweets.replies),
-    limit:6
+    limit: 6,
+    orderBy: [desc(tweets.created_at)],
   });
   console.log(feed);
   const data = [
@@ -42,6 +43,30 @@ export default async function Home() {
     },
     // Add more fake data items as needed
   ];
+  function extractURL(text: string) {
+    const urlRegex = /(https?:\/\/[^\s]+)/;
+    const match = text.match(urlRegex);
+
+    if (match) {
+      const url = match[0];
+      return url;
+    }
+
+    return null;
+  }
+  function removURL(text: string) {
+    const urlRegex = /(https?:\/\/[^\s]+)/;
+    const match = text.match(urlRegex);
+  
+    if (match) {
+      const url = match[0];
+      const updatedText = text.replace(url, '');
+      return updatedText ;
+    }
+  
+    return text;
+  }
+  
   return (
     <main className="flex min-h-screen justify-center ">
       <div
@@ -74,8 +99,17 @@ export default async function Home() {
                   </span>
 
                   <Link href={`/${post.username}/status/${post.id} `}>
-                    <span>{post.content}</span>
+                    <span>{removURL(post.content)}</span>
                   </Link>
+                  {extractURL(post.content) && (
+                    <div className="relative w-full mt-2">
+                      <img
+                        src={extractURL(post.content)}
+                        alt=""
+                        className="rounded-2xl w-full object-contain "
+                      />
+                    </div>
+                  )}
                   <div className="flex space-x-5 items-end mt-2">
                     <div className="flex items-end space-x-3 ">
                       <svg

@@ -1,7 +1,7 @@
 {
     "out": "./drizzle",
     "schema": "./app/db/schema.ts",
-    "connectionString": "mysql://w4wqfmtdvb63gnqqqa68:pscale_pw_Rkk467BJTy5BMQE6wNu555mXBbbfxdkBOM9EaZIW0RQ@aws.connect.psdb.cloud/twitter?sslaccept=strict",
+    "connectionString": "mysql://g4tzxeu3tskwuwxtv2ip:pscale_pw_MS9fPcdkgog9F0SWRXWptomTDBp8L8GQPOQFZiKYf2x@aws.connect.psdb.cloud/twitter?sslaccept=strict",
 
     "breakpoints": true,
     "driver":"mysql2"

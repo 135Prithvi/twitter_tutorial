@@ -5,34 +5,46 @@ import { useRef, useState } from "react";
 import tweetReply from "../actions/tweetReply";
 import tweetAction from "../actions/tweet";
 import { FormEvent } from "react";
+import { useUploadThing } from "../utils/uploadthing";
 export default function TweetComposer({
   reply_tweet_id,
 }: {
   reply_tweet_id: bigint | undefined;
 }) {
   const [tweet, setTweet] = useState("");
-  const [selectedFile, setSelectedFile] = useState<null | string>(null);
+  const [upload, setUpload] = useState("");
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const mediaRef = useRef(null);
   const { isLoaded, isSignedIn, user } = useUser();
-
+  const { startUpload } = useUploadThing("imageUploader", {
+    onClientUploadComplete: (v) => {
+      alert("uploaded successfully!");
+      setUpload(v[0].fileUrl);
+    },
+    onUploadError: () => {
+      alert("error occurred while uploading");
+    },
+  });
   if (!isLoaded || !isSignedIn) {
     return null;
   }
   const addImageToPost = (e) => {
     const reader = new FileReader();
     if (e.target.files[0]) {
-      reader.readAsDataURL(e.target.files[0]);
+      setSelectedFile(e.target.files[0]);
+
     }
 
-    reader.onload = (readerEvent) => {
-      setSelectedFile(readerEvent.target.result);
-    };
   };
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (!reply_tweet_id) {
-      await tweetAction("dickinsontiwari", tweet);
-      setTweet("");
+      if (!selectedFile) return null;
+      const filess = await startUpload([selectedFile]);
+
+      await tweetAction("dickinsontiwari", `${tweet} ${filess[0].fileUrl}`);
+      setTweet("");  
+      setSelectedFile(null);  
       return null;
     }
     await tweetReply(reply_tweet_id, tweet);
@@ -59,23 +71,23 @@ export default function TweetComposer({
           className="w-full flex-grow bg-transparent p-4 text-xl outline-none "
           placeholder="What is happening?!"
           autoComplete="off"
-          {...(selectedFile && (
-            <div className="relative">
-              <div
-                className="absolute w-8 h-8 bg-[#15181c] hover:bg-[#272c26] 
-                bg-opacity-75 rounded-full flex items-center justify-center top-1 left-1 cursor-pointer"
-                onClick={() => setSelectedFile(null)}
-              >
-                {/* <XIcon className="text-white h-5" /> */}
-              </div>
-              <img
-                src={selectedFile}
-                alt=""
-                className="rounded-2xl max-h-80 object-contain"
-              />
-            </div>
-          ))}
         />
+        {selectedFile ? (
+          <div className="relative">
+            <div
+              className="absolute w-8 h-8 bg-[#15181c] hover:bg-[#272c26] 
+                bg-opacity-75 rounded-full flex items-center justify-center top-1 left-1 cursor-pointer"
+              onClick={() => setSelectedFile(null)}
+            >
+              {/* <XIcon className="text-white h-5" /> */}
+            </div>
+            <img
+              src={URL.createObjectURL(selectedFile)}
+              alt=""
+              className="rounded-2xl max-h-80 object-contain"
+            />
+          </div>
+        ) : null}
         <div className="mt-2 flex justify-between pl-4 py-2 ">
           <div className="flex space-x-5 items-center">
             <div onClick={() => mediaRef.current?.click()}>
