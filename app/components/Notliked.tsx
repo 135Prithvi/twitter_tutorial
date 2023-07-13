@@ -21,7 +21,7 @@ export default function NotLiked({
         fill="#f43f5e"
         onClick={async () => {
           addOptimisticLikes(3);
-          await tweetLike("dickinsontiwari", tweet_id, likes);
+          await tweetLike(tweet_id, likes);
         }}
         className="r-1gfgf0w r-4qtqp9 r-yyyyoo r-z80fyv r-dnmrzs r-bnwqim r-1plcrui r-lrvibr r-19wmn03 text-blue-500 fill-blue-500 w-6 h-6 cursor-pointer"
       >

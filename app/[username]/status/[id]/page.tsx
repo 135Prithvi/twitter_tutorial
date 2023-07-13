@@ -8,6 +8,7 @@ import relativeTime from "dayjs/plugin/relativeTime";
 import TweetReplies from "@/app/components/TweetReplies";
 import { Suspense } from "react";
 dayjs.extend(relativeTime);
+export const revalidate =10
 export default async function StatusPage({
   params: { id },
 }: {

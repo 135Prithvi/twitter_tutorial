@@ -1,6 +1,10 @@
 import { clerkClient } from "@clerk/nextjs";
 import { Suspense } from "react";
-
+import { tweets } from "../db/schema";
+import { desc, eq } from "drizzle-orm";
+import { db } from "../db";
+import Tweets from "../components/Tweets";
+export const revalidate = 10;
 export default async function ProfilePage({
   params: { username },
 }: {
@@ -18,7 +22,11 @@ export default async function ProfilePage({
   });
   const user = UserData[0];
   console.log(UserData[0]);
-
+  const userTweets = await db.query.tweets.findMany({
+    where: eq(tweets.username, username),
+    limit: 6,
+    orderBy: [desc(tweets.created_at)],
+  });
   return (
     <>
       <main className="flex min-h-screen justify-center ">
@@ -74,6 +82,11 @@ export default async function ProfilePage({
               </li>
             </ul>
           </div>
+          <div className="flex w-full flex-col">
+          {[...userTweets]?.map((post) => (
+            <Tweets post={post} />
+          ))}
+        </div>
         </div>
       </main>
     </>

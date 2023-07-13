@@ -32,19 +32,21 @@ export default function TweetComposer({
     const reader = new FileReader();
     if (e.target.files[0]) {
       setSelectedFile(e.target.files[0]);
-
     }
-
   };
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (!reply_tweet_id) {
-      if (!selectedFile) return null;
+      if (!selectedFile) {
+        await tweetAction(user?.username, tweet);
+      setTweet("");
+        return null;
+      }
       const filess = await startUpload([selectedFile]);
 
-      await tweetAction("dickinsontiwari", `${tweet} ${filess[0].fileUrl}`);
-      setTweet("");  
-      setSelectedFile(null);  
+      await tweetAction(user?.username, `${tweet} ${filess[0].fileUrl}`);
+      setTweet("");
+      setSelectedFile(null);
       return null;
     }
     await tweetReply(reply_tweet_id, tweet);
