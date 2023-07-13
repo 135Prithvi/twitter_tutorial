@@ -1,7 +1,7 @@
 "use client";
 
 import { useUser } from "@clerk/nextjs";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import tweetReply from "../actions/tweetReply";
 import tweetAction from "../actions/tweet";
 import { FormEvent } from "react";
@@ -11,12 +11,24 @@ export default function TweetComposer({
   reply_tweet_id: bigint | undefined;
 }) {
   const [tweet, setTweet] = useState("");
+  const [selectedFile, setSelectedFile] = useState<null | string>(null);
+  const mediaRef = useRef(null);
   const { isLoaded, isSignedIn, user } = useUser();
 
   if (!isLoaded || !isSignedIn) {
     return null;
   }
-  async function handleSubmit(e:FormEvent<HTMLFormElement>) {
+  const addImageToPost = (e) => {
+    const reader = new FileReader();
+    if (e.target.files[0]) {
+      reader.readAsDataURL(e.target.files[0]);
+    }
+
+    reader.onload = (readerEvent) => {
+      setSelectedFile(readerEvent.target.result);
+    };
+  };
+  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (!reply_tweet_id) {
       await tweetAction("dickinsontiwari", tweet);
@@ -47,18 +59,42 @@ export default function TweetComposer({
           className="w-full flex-grow bg-transparent p-4 text-xl outline-none "
           placeholder="What is happening?!"
           autoComplete="off"
+          {...(selectedFile && (
+            <div className="relative">
+              <div
+                className="absolute w-8 h-8 bg-[#15181c] hover:bg-[#272c26] 
+                bg-opacity-75 rounded-full flex items-center justify-center top-1 left-1 cursor-pointer"
+                onClick={() => setSelectedFile(null)}
+              >
+                {/* <XIcon className="text-white h-5" /> */}
+              </div>
+              <img
+                src={selectedFile}
+                alt=""
+                className="rounded-2xl max-h-80 object-contain"
+              />
+            </div>
+          ))}
         />
         <div className="mt-2 flex justify-between pl-4 py-2 ">
           <div className="flex space-x-5 items-center">
-            <svg
-              viewBox="0 0 24 24"
-              aria-hidden="true"
-              className="r-1gfgf0w r-4qtqp9 r-yyyyoo r-z80fyv r-dnmrzs r-bnwqim r-1plcrui r-lrvibr r-19wmn03 text-blue-500 fill-blue-500 w-6 h-6"
-            >
-              <g>
-                <path d="M3 5.5C3 4.119 4.119 3 5.5 3h13C19.881 3 21 4.119 21 5.5v13c0 1.381-1.119 2.5-2.5 2.5h-13C4.119 21 3 19.881 3 18.5v-13zM5.5 5c-.276 0-.5.224-.5.5v9.086l3-3 3 3 5-5 3 3V5.5c0-.276-.224-.5-.5-.5h-13zM19 15.414l-3-3-5 5-3-3-3 3V18.5c0 .276.224.5.5.5h13c.276 0 .5-.224.5-.5v-3.086zM9.75 7C8.784 7 8 7.784 8 8.75s.784 1.75 1.75 1.75 1.75-.784 1.75-1.75S10.716 7 9.75 7z"></path>
-              </g>
-            </svg>
+            <div onClick={() => mediaRef.current?.click()}>
+              <svg
+                viewBox="0 0 24 24"
+                aria-hidden="true"
+                className="r-1gfgf0w r-4qtqp9 r-yyyyoo r-z80fyv r-dnmrzs r-bnwqim r-1plcrui r-lrvibr r-19wmn03 text-blue-500 fill-blue-500 w-6 h-6"
+              >
+                <g>
+                  <path d="M3 5.5C3 4.119 4.119 3 5.5 3h13C19.881 3 21 4.119 21 5.5v13c0 1.381-1.119 2.5-2.5 2.5h-13C4.119 21 3 19.881 3 18.5v-13zM5.5 5c-.276 0-.5.224-.5.5v9.086l3-3 3 3 5-5 3 3V5.5c0-.276-.224-.5-.5-.5h-13zM19 15.414l-3-3-5 5-3-3-3 3V18.5c0 .276.224.5.5.5h13c.276 0 .5-.224.5-.5v-3.086zM9.75 7C8.784 7 8 7.784 8 8.75s.784 1.75 1.75 1.75 1.75-.784 1.75-1.75S10.716 7 9.75 7z"></path>
+                </g>
+              </svg>
+              <input
+                type="file"
+                ref={mediaRef}
+                hidden
+                onChange={addImageToPost}
+              />
+            </div>
             <svg
               viewBox="0 0 24 24"
               aria-hidden="true"
