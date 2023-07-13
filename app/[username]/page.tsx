@@ -54,10 +54,23 @@ export default async function ProfilePage({
             </span>
           </div>
 
-          <div className="border-b border-slate-800 px-4">
-            <ul className="-mb-px flex flex-wrap text-center text-sm font-medium">
-              <li className="mr-2" role="presentation">
-                <span className="inline-block rounded-t-lg  p-4">Tweets</span>
+          <div className="border-b border-slate-800 px- mt-3">
+            <ul className="-mb-px flex grow flex-wrap text-center w-full text-sm font-medium">
+              <li className="mr-2 grow" role="presentation">
+                <span className="inline-block rounded grow w-full p-2 hover:bg-white/30">
+                  Tweets
+                </span>
+              </li>
+              <li className="grow" role="presentation">
+                <span className="inline-block rounded grow w-full p-2 hover:bg-white/30">
+                  Replies
+                </span>
+              </li>
+
+              <li className="grow" role="presentation">
+                <span className="inline-block rounded grow w-full p-2 hover:bg-white/30">
+                  Likes
+                </span>
               </li>
             </ul>
           </div>
