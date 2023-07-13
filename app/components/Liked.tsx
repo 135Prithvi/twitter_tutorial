@@ -1,4 +1,4 @@
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { db } from "../db";
 import { likes } from "../db/schema";
 import AlreadyLiked from "./Likes";
@@ -14,14 +14,17 @@ export default async function Liked({
   const liked = await db
     .select()
     .from(likes)
-    .where(eq(likes.tweet_id, BigInt(tweet_id)))
-    .where(eq(likes.username, "dickinsontiwari"));
-  console.log(liked);
+    .where(
+      and(
+        eq(likes.tweet_id, BigInt(tweet_id)),
+        eq(likes.username, "dickinsontiwari")
+      )
+    );
+  console.log(liked, `>>> ${tweet_id} `);
   return (
     <>
       {liked[0]?.tweet_id !== BigInt(tweet_id) ? (
-       
-        <NotLiked tweet_id={tweet_id} likes={Clikes}/>
+        <NotLiked tweet_id={tweet_id} likes={Clikes} />
       ) : (
         <AlreadyLiked tweet_id={tweet_id} likes={Clikes} />
       )}
