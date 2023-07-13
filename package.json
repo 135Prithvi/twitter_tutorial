@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "migrations:push": "node -r esbuild-register app/db/migrate.ts"
+    "migrations:push": "node -r esbuild-register app/db/migrate.ts",
+    "migrations:generate": "drizzle-kit generate:mysql"
   },
   "dependencies": {
     "@clerk/nextjs": "^4.21.13",

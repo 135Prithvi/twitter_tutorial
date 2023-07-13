@@ -28,3 +28,18 @@ export const tweets = mysqlTable(
     };
   }
 );
+export const likes = mysqlTable(
+  "likes",
+  {
+    id: bigint("likes_id", { mode: "bigint" }).primaryKey().autoincrement(),
+    username: varchar("username", { length: 256 }),
+    tweet_id: bigint("tweet_id", { mode: "bigint" }),
+    created_at:timestamp("created_at").defaultNow()
+  },
+  (table) => {
+    return {
+      tweetIdx: index("tweet_idx").on(table.tweet_id),
+      userIdx: index("user_idx").on(table.username),
+    };
+  }
+);

@@ -4,6 +4,7 @@ import { useUser } from "@clerk/nextjs";
 import { useState } from "react";
 import tweetReply from "../actions/tweetReply";
 import tweetAction from "../actions/tweet";
+import { FormEvent } from "react";
 export default function TweetComposer({
   reply_tweet_id,
 }: {
@@ -15,7 +16,7 @@ export default function TweetComposer({
   if (!isLoaded || !isSignedIn) {
     return null;
   }
-  async function handleSubmit(e) {
+  async function handleSubmit(e:FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (!reply_tweet_id) {
       await tweetAction("dickinsontiwari", tweet);

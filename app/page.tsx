@@ -1,18 +1,23 @@
 import { SignUp } from "@clerk/nextjs";
 import Link from "next/link";
-import { currentUser } from '@clerk/nextjs';
+import { currentUser } from "@clerk/nextjs";
 import { db } from "./db";
 import { tweets } from "./db/schema";
 import TweetComposer from "./components/TweetComposer";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
+import Liked from "./components/Liked";
+import { isNotNull } from "drizzle-orm";
 dayjs.extend(relativeTime);
-export const runtime = "nodejs"
+export const runtime = "nodejs";
 export default async function Home() {
-  const user = await currentUser();
-  if (!user) return <div>Not logged in</div>;
-  const feed = await db.select().from(tweets)
-  console.log(feed)
+  // const user = await currentUser();
+  // if (!user) return <div>Not logged in</div>;
+  // const feed = await db.select().from(tweets).where(eq(tweets.replies,null));
+  const feed = await db.query.tweets.findMany({
+    where: isNotNull(tweets.replies),
+  });
+  console.log(feed);
   const data = [
     {
       id: BigInt(4232323232),
@@ -42,7 +47,7 @@ export default async function Home() {
         className="w-full max-w-xl border-x-2 border-slate-300 text-xl border-opacity-40 text-white
         "
       >
-        <TweetComposer reply_tweet_id={undefined}  />
+        <TweetComposer reply_tweet_id={undefined} />
         <div className="flex w-full flex-col">
           {[...feed]?.map((post) => (
             <div
@@ -63,8 +68,8 @@ export default async function Home() {
                       {`@` + post.username?.split(" ").join("")}
                     </Link>
                     <span className="font-thin">{` · ${dayjs(
-                        post.created_at
-                      ).fromNow()}`}</span>
+                      post.created_at
+                    ).fromNow()}`}</span>
                   </span>
 
                   <Link href={`/${post.username}/status/${post.id} `}>
@@ -93,20 +98,11 @@ export default async function Home() {
                           <path d="M4.5 3.88l4.432 4.14-1.364 1.46L5.5 7.55V16c0 1.1.896 2 2 2H13v2H7.5c-2.209 0-4-1.79-4-4V7.55L1.432 9.48.068 8.02 4.5 3.88zM16.5 6H11V4h5.5c2.209 0 4 1.79 4 4v8.45l2.068-1.93 1.364 1.46-4.432 4.14-4.432-4.14 1.364-1.46 2.068 1.93V8c0-1.1-.896-2-2-2z"></path>
                         </g>
                       </svg>
-                      <span className="text-sm opacity-60">{post.retweets}</span>
+                      <span className="text-sm opacity-60">
+                        {post.retweets}
+                      </span>
                     </div>
-                    <div className="flex items-end space-x-3 ">
-                      <svg
-                        viewBox="0 0 24 24"
-                        aria-hidden="true"
-                        className="r-1gfgf0w r-4qtqp9 r-yyyyoo r-z80fyv r-dnmrzs r-bnwqim r-1plcrui r-lrvibr r-19wmn03 text-blue-500 fill-blue-500 w-6 h-6"
-                      >
-                        <g>
-                          <path d="M16.697 5.5c-1.222-.06-2.679.51-3.89 2.16l-.805 1.09-.806-1.09C9.984 6.01 8.526 5.44 7.304 5.5c-1.243.07-2.349.78-2.91 1.91-.552 1.12-.633 2.78.479 4.82 1.074 1.97 3.257 4.27 7.129 6.61 3.87-2.34 6.052-4.64 7.126-6.61 1.111-2.04 1.03-3.7.477-4.82-.561-1.13-1.666-1.84-2.908-1.91zm4.187 7.69c-1.351 2.48-4.001 5.12-8.379 7.67l-.503.3-.504-.3c-4.379-2.55-7.029-5.19-8.382-7.67-1.36-2.5-1.41-4.86-.514-6.67.887-1.79 2.647-2.91 4.601-3.01 1.651-.09 3.368.56 4.798 2.01 1.429-1.45 3.146-2.1 4.796-2.01 1.954.1 3.714 1.22 4.601 3.01.896 1.81.846 4.17-.514 6.67z"></path>
-                        </g>
-                      </svg>
-                      <span className="text-sm opacity-60">{post.likes}</span>
-                    </div>
+                    <Liked tweet_id={post.id} Clikes={post.likes} />
                     <div className="flex items-end space-x-3 ">
                       <svg
                         viewBox="0 0 24 24"

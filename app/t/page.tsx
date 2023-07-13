@@ -1,6 +1,6 @@
 import { migrate } from "drizzle-orm/planetscale-serverless/migrator";
 import { db } from "../db";
-import { tweets } from "../db/schema";
+import { likes, tweets } from "../db/schema";
 export default async function Jp() {
   const data = [
     {
@@ -19,6 +19,6 @@ export default async function Jp() {
     },
     // Add more fake data items as needed
   ];
-  // const res = await db.insert(tweets).values(data);
+  const res = await db.delete(likes)
   return "ok";
 }
