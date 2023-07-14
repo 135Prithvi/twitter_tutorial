@@ -7,6 +7,8 @@ import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import TweetReplies from "@/app/components/TweetReplies";
 import { Suspense } from "react";
+import { clerkClient } from "@clerk/nextjs";
+import Tweets from "@/app/components/Tweets";
 dayjs.extend(relativeTime);
 export const revalidate =10
 export default async function StatusPage({
@@ -16,7 +18,20 @@ export default async function StatusPage({
 }) {
   const post = await db.query.tweets.findFirst({
     where: eq(tweets.id, BigInt(id)),
-  });
+  }).then(
+    async (tweet) => {
+      if (tweet) {
+        const user = await  clerkClient.users.getUserList({ username: [tweet.username] })
+        if (user) {
+          return {
+            ...tweet,
+            user: user[0]
+          };
+        }
+      }
+      return null; // Handle the case where the tweet or user is not found
+    }
+  );
   if (!post) {
     return null;
   }
@@ -27,7 +42,7 @@ export default async function StatusPage({
           "
       >
         <div className="flex w-full flex-col">
-          <div
+          {/* <div
             key={Number(post.id)}
             className="border-b border-slate-200 border-opacity-40 p-3"
           >
@@ -115,7 +130,8 @@ export default async function StatusPage({
                 </div>
               </div>
             </div>
-          </div>
+          </div> */}
+          <Tweets post={post}/>
         </div>
         <TweetComposer reply_tweet_id={BigInt(id)} />
         <Suspense

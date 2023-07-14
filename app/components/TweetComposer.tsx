@@ -18,7 +18,7 @@ export default function TweetComposer({
   const { isLoaded, isSignedIn, user } = useUser();
   const { startUpload } = useUploadThing("imageUploader", {
     onClientUploadComplete: (v) => {
-      alert("uploaded successfully!");
+      
       setUpload(v[0].fileUrl);
     },
     onUploadError: () => {

@@ -1,3 +1,4 @@
+
 import Link from "next/link";
 
 
@@ -8,6 +9,7 @@ import Liked from "./Liked";
 import Image from "next/image"
 import { Suspense } from "react";
 import { clerkClient } from "@clerk/nextjs";
+import { User } from "@clerk/nextjs/dist/types/server";
 dayjs.extend(relativeTime);
 interface PostFromFEED {
     
@@ -18,11 +20,12 @@ interface PostFromFEED {
         retweets: number | null;
         replies: bigint | null;
         created_at: Date | null;
+        user:User|null,
     
 }
 export default async function  Tweets({post}:{post:PostFromFEED}){
-    const user = await clerkClient.users.getUserList({username:[post.username]});
-
+    // const user = await clerkClient.users.getUserList({username:[post.username]});
+// 
     function extractURL(text: string | null) {
         const urlRegex = /(https?:\/\/[^\s]+)/;
         const match = text?.match(urlRegex);
@@ -55,7 +58,7 @@ export default async function  Tweets({post}:{post:PostFromFEED}){
         <div className="flex gap-2">
           <Link href={`/${post.username}`} shallow className="h-10">
             <img
-              src={user[0]?.imageUrl}
+              src={post.user?.imageUrl}
               alt="twitter user"
               className=" h-10 w-10 rounded-full"
             />

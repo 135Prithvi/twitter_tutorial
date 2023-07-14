@@ -35,6 +35,6 @@
     "uploadthing": "^5.1.0"
   },
   "devDependencies": {
-    "drizzle-kit": "^0.19.4"
+    "drizzle-kit": "^0.19.5"
   }
 }
