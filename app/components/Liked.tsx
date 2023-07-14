@@ -3,6 +3,7 @@ import { db } from "../db";
 import { likes } from "../db/schema";
 import AlreadyLiked from "./Likes";
 import NotLiked from "./Notliked";
+import { auth } from "@clerk/nextjs";
 
 export default async function Liked({
   Clikes,
@@ -11,13 +12,14 @@ export default async function Liked({
   Clikes: number | null;
   tweet_id: any;
 }) {
+  const {sessionClaims} = auth()
   const liked = await db
     .select()
     .from(likes)
     .where(
       and(
         eq(likes.tweet_id, BigInt(tweet_id)),
-        eq(likes.username, "dickinsontiwari")
+        eq(likes.username, `${sessionClaims?.username}`),
       )
     );
   console.log(liked, `>>> ${tweet_id} `);

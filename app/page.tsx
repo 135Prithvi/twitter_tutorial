@@ -10,12 +10,14 @@ import { asc, desc, isNotNull, isNull } from "drizzle-orm";
 import Image from "next/image";
 import { Suspense } from "react";
 import Tweets from "./components/Tweets";
-import { clerkClient } from "@clerk/nextjs";
+import { clerkClient, currentUser } from "@clerk/nextjs";
+import { redis } from "./cache/redis";
 dayjs.extend(relativeTime);
 export const runtime = "nodejs";
 export default async function Home() {
-  // const user = await currentUser();
-  // if (!user) return <div>Not logged in</div>;
+  const user = await currentUser();
+
+  if (!user) return <div className="">Not logged in <Link className="hover:underline text-blue-600 hover:text-blue-500 font-bold" href={"/sign-up"}>pls signup</Link> or <Link className="hover:underline text-blue-600 hover:text-blue-500 font-bold"  href={"/sign-in"}>login</Link></div>;
   // const feed = await db.select().from(tweets).where(eq(tweets.replies,null));
   const feed = await db.query.tweets.findMany({
     where: isNull(tweets.replies),
@@ -23,20 +25,25 @@ export default async function Home() {
     orderBy: [desc(tweets.created_at)],
   });
 
-  // Fetch the user for each post
-  const users = await Promise.all(
-    feed.map((post) =>
-      clerkClient.users.getUserList({ username: [post.username] })
-    )
-  );
-
-  // Add the user image URL to each post
   for (let i = 0; i < feed.length; i++) {
-    const user = users[i];
-    feed[i].user = user;
-    feed[i].user.imageUrl = user[0]?.imageUrl;
-  }
+    const imageUrl = await redis.get(`${feed[i].username}`);
+    // Check if the user's image URL is in Redis cache
 
+    if (imageUrl) {
+      // If cached value is present, use it
+      feed[i].imageUrl = imageUrl;
+    } else {
+      // If cached value is not present, fetch it and add it to Redis cache
+      const user = await clerkClient.users.getUserList({
+        username: [feed[i].username],
+      });
+      const imageUrl = user[0]?.imageUrl;
+      feed[i].imageUrl = imageUrl;
+
+      // Add the value to Redis cache
+      redis.set(`${user[0]?.username}`, imageUrl);
+    }
+  }
   console.log(feed);
   const data = [
     {

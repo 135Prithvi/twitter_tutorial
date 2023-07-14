@@ -1,6 +1,6 @@
 "use client";
 
-import { useUser } from "@clerk/nextjs";
+import { UserButton, UserProfile, useUser } from "@clerk/nextjs";
 import { useRef, useState } from "react";
 import tweetReply from "../actions/tweetReply";
 import tweetAction from "../actions/tweet";
@@ -18,7 +18,6 @@ export default function TweetComposer({
   const { isLoaded, isSignedIn, user } = useUser();
   const { startUpload } = useUploadThing("imageUploader", {
     onClientUploadComplete: (v) => {
-      
       setUpload(v[0].fileUrl);
     },
     onUploadError: () => {
@@ -39,7 +38,7 @@ export default function TweetComposer({
     if (!reply_tweet_id) {
       if (!selectedFile) {
         await tweetAction(user?.username, tweet);
-      setTweet("");
+        setTweet("");
         return null;
       }
       const filess = await startUpload([selectedFile]);
