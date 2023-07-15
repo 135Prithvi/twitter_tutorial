@@ -1,9 +1,10 @@
 import { clerkClient } from "@clerk/nextjs";
 import { Suspense } from "react";
 import { tweets } from "../db/schema";
-import { desc, eq } from "drizzle-orm";
+import { desc, eq, sql } from "drizzle-orm";
 import { db } from "../db";
 import Tweets from "../components/Tweets";
+import { redis } from "../cache/redis";
 export const revalidate = 10;
 export default async function ProfilePage({
   params: { username },
@@ -27,6 +28,35 @@ export default async function ProfilePage({
     limit: 6,
     orderBy: [desc(tweets.created_at)],
   });
+  for (let i = 0; i < userTweets.length; i++) {
+    const result = await db
+    .select({ count: sql<number>`count(*)` })
+    .from(tweets)
+    .where(eq(tweets.replies, BigInt(userTweets[i].id)));
+    if (userTweets[i].username == user.username) {
+      userTweets[i].imageUrl = user.imageUrl;
+      userTweets[i].reply_count = result[0].count;
+    } else {
+      const imageUrl = await redis.get(`${userTweets[i].username}`);
+      if (imageUrl) {
+        // If cached value is present, use it
+        userTweets[i].imageUrl = imageUrl;
+        userTweets[i].reply_count = result[0].count;
+      } else {
+        // If cached value is not present, fetch it and add it to Redis cache
+        const user = await clerkClient.users.getUserList({
+          username: [userTweets[i].username],
+        });
+        const imageUrl = user[0]?.imageUrl;
+        userTweets[i].imageUrl = imageUrl;
+        userTweets[i].reply_count = result[0].count;
+        // Add the value to Redis cache
+        redis.set(`${user[0]?.username}`, imageUrl);
+      }
+    }
+
+    // Check if the user's image URL is in Redis cache
+  }
   return (
     <>
       <main className="flex min-h-screen justify-center ">
@@ -83,10 +113,10 @@ export default async function ProfilePage({
             </ul>
           </div>
           <div className="flex w-full flex-col">
-          {[...userTweets]?.map((post) => (
-            <Tweets post={post} />
-          ))}
-        </div>
+            {[...userTweets]?.map((post) => (
+              <Tweets post={post} />
+            ))}
+          </div>
         </div>
       </main>
     </>

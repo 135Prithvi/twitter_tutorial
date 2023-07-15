@@ -5,6 +5,8 @@ import Link from "next/link"
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import Liked from "./Liked";
+import { clerkClient } from "@clerk/nextjs";
+import { redis } from "../cache/redis";
 dayjs.extend(relativeTime);
 export default async function TweetReplies({id}:{id:bigint}) {
     const tweetReplies= await db.query.tweets.findMany(
@@ -12,6 +14,25 @@ export default async function TweetReplies({id}:{id:bigint}) {
             where: eq(tweets.replies,id)
         }
     )
+    for (let i = 0; i < tweetReplies.length; i++) {
+      const imageUrl = await redis.get(`${tweetReplies[i].username}`);
+      // Check if the user's image URL is in Redis cache
+  
+      if (imageUrl) {
+        // If cached value is present, use it
+        tweetReplies[i].imageUrl = imageUrl;
+      } else {
+        // If cached value is not present, fetch it and add it to Redis cache
+        const user = await clerkClient.users.getUserList({
+          username: [tweetReplies[i].username],
+        });
+        const imageUrl = user[0]?.imageUrl;
+        tweetReplies[i].imageUrl = imageUrl;
+  
+        // Add the value to Redis cache
+        redis.set(`${user[0]?.username}`, imageUrl);
+      }
+    }
     return (
         <div className="flex w-full flex-col">
           {[...tweetReplies]?.map((post) => (
@@ -22,7 +43,7 @@ export default async function TweetReplies({id}:{id:bigint}) {
               <div className="flex gap-2">
                 <Link href={`/${post.username}`} shallow className="h-10">
                   <img
-                    src={"post.author.image as string"}
+                    src={post?.imageUrl as string}
                     alt="twitter user"
                     className=" h-10 w-10 rounded-full"
                   />

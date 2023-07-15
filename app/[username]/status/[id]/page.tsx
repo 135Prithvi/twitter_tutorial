@@ -9,29 +9,40 @@ import TweetReplies from "@/app/components/TweetReplies";
 import { Suspense } from "react";
 import { clerkClient } from "@clerk/nextjs";
 import Tweets from "@/app/components/Tweets";
+import { redis } from "@/app/cache/redis";
 dayjs.extend(relativeTime);
-export const revalidate =10
+export const revalidate = 10;
 export default async function StatusPage({
   params: { id },
 }: {
   params: { id: string };
 }) {
-  const post = await db.query.tweets.findFirst({
-    where: eq(tweets.id, BigInt(id)),
-  }).then(
-    async (tweet) => {
+  const post = await db.query.tweets
+    .findFirst({
+      where: eq(tweets.id, BigInt(id)),
+    })
+    .then(async (tweet) => {
       if (tweet) {
-        const user = await  clerkClient.users.getUserList({ username: [tweet.username] })
-        if (user) {
+        const imageUrl = await redis.get(`${tweet.username}`);
+        if (imageUrl) {
           return {
             ...tweet,
-            user: user[0]
+            imageUrl: imageUrl,
           };
+        } else {
+          const user = await clerkClient.users.getUserList({
+            username: [tweet.username],
+          });
+          if (user) {
+            return {
+              ...tweet,
+              imageUrl: user[0].imageUrl,
+            };
+          }
         }
       }
       return null; // Handle the case where the tweet or user is not found
-    }
-  );
+    });
   if (!post) {
     return null;
   }
@@ -131,7 +142,7 @@ export default async function StatusPage({
               </div>
             </div>
           </div> */}
-          <Tweets post={post}/>
+          <Tweets post={post} />
         </div>
         <TweetComposer reply_tweet_id={BigInt(id)} />
         <Suspense

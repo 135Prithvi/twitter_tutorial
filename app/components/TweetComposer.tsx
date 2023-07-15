@@ -52,7 +52,7 @@ export default function TweetComposer({
     setTweet("");
   }
   return (
-    <div className="flex w-full border-b border-slate-200 border-opacity-40 p-1">
+    <div className="flex w-full border-b border-slate-200 border-opacity-40 p-1 h-auto">
       <img
         src={
           user.imageUrl ||
@@ -62,14 +62,14 @@ export default function TweetComposer({
         className="ml-3 h-14 w-14 rounded-full"
       />
 
-      <form onSubmit={handleSubmit} className="w-full">
-        <input
-          type="text"
+      <form onSubmit={handleSubmit} className="w-full h-auto">
+        <textarea
+          
           id="tweet"
           name="tweet"
           value={tweet}
           onChange={(e) => setTweet(e.target.value)}
-          className="w-full flex-grow bg-transparent p-4 text-xl outline-none "
+          className="w-full flex- resize-none h-auto  bg-transparent p-4 text-xl outline-none break-words "
           placeholder="What is happening?!"
           autoComplete="off"
         />

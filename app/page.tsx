@@ -5,9 +5,9 @@ import { tweets } from "./db/schema";
 import TweetComposer from "./components/TweetComposer";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
-import Liked from "./components/Liked";
-import { asc, desc, isNotNull, isNull } from "drizzle-orm";
-import Image from "next/image";
+
+import { desc, eq, isNull, sql } from "drizzle-orm";
+
 import { Suspense } from "react";
 import Tweets from "./components/Tweets";
 import { clerkClient, currentUser } from "@clerk/nextjs";
@@ -17,7 +17,25 @@ export const runtime = "nodejs";
 export default async function Home() {
   const user = await currentUser();
 
-  if (!user) return <div className="">Not logged in <Link className="hover:underline text-blue-600 hover:text-blue-500 font-bold" href={"/sign-up"}>pls signup</Link> or <Link className="hover:underline text-blue-600 hover:text-blue-500 font-bold"  href={"/sign-in"}>login</Link></div>;
+  if (!user)
+    return (
+      <div className="">
+        Not logged in{" "}
+        <Link
+          className="hover:underline text-blue-600 hover:text-blue-500 font-bold"
+          href={"/sign-up"}
+        >
+          pls signup
+        </Link>{" "}
+        or{" "}
+        <Link
+          className="hover:underline text-blue-600 hover:text-blue-500 font-bold"
+          href={"/sign-in"}
+        >
+          login
+        </Link>
+      </div>
+    );
   // const feed = await db.select().from(tweets).where(eq(tweets.replies,null));
   const feed = await db.query.tweets.findMany({
     where: isNull(tweets.replies),
@@ -28,10 +46,14 @@ export default async function Home() {
   for (let i = 0; i < feed.length; i++) {
     const imageUrl = await redis.get(`${feed[i].username}`);
     // Check if the user's image URL is in Redis cache
-
+    const result = await db
+      .select({ count: sql<number>`count(*)` })
+      .from(tweets)
+      .where(eq(tweets.replies, BigInt(feed[i].id)));
     if (imageUrl) {
       // If cached value is present, use it
       feed[i].imageUrl = imageUrl;
+      feed[i].reply_count = result[0].count;
     } else {
       // If cached value is not present, fetch it and add it to Redis cache
       const user = await clerkClient.users.getUserList({
@@ -39,12 +61,12 @@ export default async function Home() {
       });
       const imageUrl = user[0]?.imageUrl;
       feed[i].imageUrl = imageUrl;
-
+      feed[i].reply_count = result[0].count;
       // Add the value to Redis cache
       redis.set(`${user[0]?.username}`, imageUrl);
     }
   }
-  console.log(feed);
+  // console.log(feed);
   const data = [
     {
       id: BigInt(4232323232),

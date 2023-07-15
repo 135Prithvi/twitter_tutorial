@@ -1,7 +1,8 @@
 import { Redis } from '@upstash/redis'
+import { env } from '../env/env.mjs'
 
 export const redis = new Redis({
-  url: process.env.CACHE_URL || 'redis://localhost:6379',
-  token: process.env.CACHE_TOKEN || '',
+  url: env.CACHE_URL ,
+  token: env.CACHE_TOKEN ,
 })
    

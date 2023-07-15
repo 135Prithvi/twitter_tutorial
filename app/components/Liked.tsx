@@ -22,10 +22,10 @@ export default async function Liked({
         eq(likes.username, `${sessionClaims?.username}`),
       )
     );
-  console.log(liked, `>>> ${tweet_id} `);
+  // console.log(liked, `>>> ${tweet_id} `);
   return (
     <>
-      {liked[0]?.tweet_id !== BigInt(tweet_id) ? (
+      {liked[0]?.username !== `${sessionClaims?.username}` ? (
         <NotLiked tweet_id={tweet_id} likes={Clikes} />
       ) : (
         <AlreadyLiked tweet_id={tweet_id} likes={Clikes} />

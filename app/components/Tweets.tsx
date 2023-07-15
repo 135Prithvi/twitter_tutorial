@@ -6,6 +6,9 @@ import Liked from "./Liked";
 
 import Image from "next/image";
 import { Suspense } from "react";
+import { db } from "../db";
+import { eq, sql } from "drizzle-orm";
+import { tweets } from "../db/schema";
 
 dayjs.extend(relativeTime);
 interface PostFromFEED {
@@ -21,6 +24,7 @@ interface PostFromFEED {
 export default async function Tweets({ post }: { post: PostFromFEED }) {
   // const user = await clerkClient.users.getUserList({username:[post.username]});
   //
+
   function extractURL(text: string | null) {
     const urlRegex = /(https?:\/\/[^\s]+)/;
     const match = text?.match(urlRegex);
@@ -62,7 +66,7 @@ export default async function Tweets({ post }: { post: PostFromFEED }) {
             className=" h-full w-full rounded-full"
           />
         </Link>
-        <div className="flex flex-col">
+        <div className="flex flex-col grow">
           <span className="align-text-top text-xs opacity-50">
             <Link href={`${post.username} `}>
               {`@` + post.username?.split(" ").join("")}
@@ -74,18 +78,19 @@ export default async function Tweets({ post }: { post: PostFromFEED }) {
 
           <Link href={`/${post.username}/status/${post.id} `}>
             <span>{removURL(post.content)}</span>
+
+            {extractURL(post.content) && (
+              <div className="relative w-full mt-2">
+                <Image
+                  src={extractURL(post.content)}
+                  alt=""
+                  width={600}
+                  height={600}
+                  className="rounded-2xl w-full object-contain "
+                />
+              </div>
+            )}
           </Link>
-          {extractURL(post.content) && (
-            <div className="relative w-full mt-2">
-              <Image
-                src={extractURL(post.content)}
-                alt=""
-                width={600}
-                height={600}
-                className="rounded-2xl w-full object-contain "
-              />
-            </div>
-          )}
           <div className="flex space-x-5 items-end mt-2">
             <div className="flex items-end space-x-3 ">
               <svg
@@ -97,7 +102,11 @@ export default async function Tweets({ post }: { post: PostFromFEED }) {
                   <path d="M1.751 10c0-4.42 3.584-8 8.005-8h4.366c4.49 0 8.129 3.64 8.129 8.13 0 2.96-1.607 5.68-4.196 7.11l-8.054 4.46v-3.69h-.067c-4.49.1-8.183-3.51-8.183-8.01zm8.005-6c-3.317 0-6.005 2.69-6.005 6 0 3.37 2.77 6.08 6.138 6.01l.351-.01h1.761v2.3l5.087-2.81c1.951-1.08 3.163-3.13 3.163-5.36 0-3.39-2.744-6.13-6.129-6.13H9.756z"></path>
                 </g>
               </svg>
-              <span className="text-sm opacity-60">598</span>
+              <span className="text-sm opacity-60">
+                <Suspense fallback={<span>...</span>}>
+                  {post.reply_count}
+                </Suspense>
+              </span>
             </div>
             <div className="flex items-end space-x-3 ">
               <svg
