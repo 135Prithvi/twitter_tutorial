@@ -1,6 +1,5 @@
 import Link from "next/link";
 
-export const runtime = "edge";
 export default async function Home() {
   return (
     <div className="bg-gray-100">
@@ -16,27 +15,12 @@ export default async function Home() {
             </div>
             <div className="flex items-center">
               <Link
-        
                 href="/ap"
                 className="hover:underline text-gray-600 hover:text-gray-500 font-bold"
               >
-                The main app
+                The app
               </Link>{" "}
               or{" "}
-              <Link
-                target="_blank"
-                href="https://www.youtube.com/@techs7296"
-                className="hover:underline text-red-600 hover:text-rose-500 font-bold"
-              >
-                YouTube
-              </Link>{" "}
-              or{" "}
-              {/* <button className="bg-blue-500 hover:bg-blue-700 text-white font-semibold px-4 py-2 mr-2">
-                Login
-              </button>
-              <button className="bg-green-500 hover:bg-green-700 text-white font-semibold px-4 py-2">
-                Sign Up
-              </button> */}
               <Link
                 className="hover:underline text-blue-600 hover:text-blue-500 font-bold"
                 href={"/sign-up"}
@@ -59,9 +43,7 @@ export default async function Home() {
       <section className="bg-blue-500 text-white">
         <div className="container mx-auto px-4 py-16">
           <div className="text-center">
-            <h1 className="text-4xl font-bold mb-4">
-              Welcome to Twi Twi Ter!
-            </h1>
+            <h1 className="text-4xl font-bold mb-4">Welcome to Twi Twi Ter!</h1>
             <p className="text-lg">Showcasing the demo of what I teach</p>
           </div>
         </div>
@@ -98,10 +80,10 @@ export default async function Home() {
                   alt=""
                 />
                 <p className="text-gray-700">
-                  In this hands-on lesson, you will have the opportunity to
-                  put your knowledge into action. We will guide you through
-                  practical exercises and provide real-world examples to
-                  enhance your learning experience.
+                  In this hands-on lesson, you will have the opportunity to put
+                  your knowledge into action. We will guide you through
+                  practical exercises and provide real-world examples to enhance
+                  your learning experience.
                 </p>
               </div>
             </div>
@@ -117,8 +99,8 @@ export default async function Home() {
                 <p className="text-gray-700">
                   Take your skills to the next level with our advanced
                   techniques lesson. Discover the tips, tricks, and best
-                  practices that will allow you to maximize the potential of
-                  Twi Twi Ter and excel in your projects.
+                  practices that will allow you to maximize the potential of Twi
+                  Twi Ter and excel in your projects.
                 </p>
               </div>
             </div>
