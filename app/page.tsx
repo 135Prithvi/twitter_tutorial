@@ -16,6 +16,14 @@ export default async function Home() {
             </div>
             <div className="flex items-center">
               <Link
+        
+                href="/ap"
+                className="hover:underline text-gray-600 hover:text-gray-500 font-bold"
+              >
+                The main app
+              </Link>{" "}
+              or{" "}
+              <Link
                 target="_blank"
                 href="https://www.youtube.com/@techs7296"
                 className="hover:underline text-red-600 hover:text-rose-500 font-bold"

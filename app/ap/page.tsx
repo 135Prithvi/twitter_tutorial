@@ -12,7 +12,7 @@ import Tweets from "../components/Tweets";
 import { clerkClient, currentUser } from "@clerk/nextjs";
 import { redis } from "../cache/redis";
 dayjs.extend(relativeTime);
-export const runtime = "edge";
+export const runtime = "nodejs";
 export default async function Home() {
 
   const feed = await db.query.tweets.findMany({
