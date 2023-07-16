@@ -12,13 +12,13 @@ export default function TweetComposer({
   reply_tweet_id: bigint | undefined;
 }) {
   const [tweet, setTweet] = useState("");
-  const [upload, setUpload] = useState("");
+  const [isUploadeding, setUploading] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const mediaRef = useRef(null);
   const { isLoaded, isSignedIn, user } = useUser();
   const { startUpload } = useUploadThing("imageUploader", {
     onClientUploadComplete: (v) => {
-      setUpload(v[0].fileUrl);
+      
     },
     onUploadError: () => {
       alert("error occurred while uploading");
@@ -37,14 +37,19 @@ export default function TweetComposer({
     e.preventDefault();
     if (!reply_tweet_id) {
       if (!selectedFile) {
+        setUploading(true)
         await tweetAction(user?.username, tweet);
         setTweet("");
+        setUploading(false)
         return null;
       }
+      setUploading(true)
       const filess = await startUpload([selectedFile]);
 
       await tweetAction(user?.username, `${tweet} ${filess[0].fileUrl}`);
+      
       setTweet("");
+      setUploading(false)
       setSelectedFile(null);
       return null;
     }
@@ -64,9 +69,9 @@ export default function TweetComposer({
 
       <form onSubmit={handleSubmit} className="w-full h-auto">
         <textarea
-          
           id="tweet"
           name="tweet"
+          disabled={isUploadeding}
           value={tweet}
           onChange={(e) => setTweet(e.target.value)}
           className="w-full flex- resize-none h-auto  bg-transparent p-4 text-xl outline-none break-words "
@@ -76,6 +81,7 @@ export default function TweetComposer({
         {selectedFile ? (
           <div className="relative">
             <div
+            
               className="absolute w-8 h-8 bg-[#15181c] hover:bg-[#272c26] 
                 bg-opacity-75 rounded-full flex items-center justify-center top-1 left-1 cursor-pointer"
               onClick={() => setSelectedFile(null)}
@@ -105,6 +111,7 @@ export default function TweetComposer({
                 type="file"
                 ref={mediaRef}
                 hidden
+                disabled={isUploadeding}
                 onChange={addImageToPost}
               />
             </div>
@@ -145,7 +152,7 @@ export default function TweetComposer({
               </g>
             </svg>
           </div>
-          <button className="text-white bg-yellow-400 hover:bg-yellow-500 focus:outline-none focus:ring-4 focus:ring-yellow-300 font-medium rounded-full text-sm px-5 py-2.5 text-center mr-2  dark:focus:ring-yellow-900">
+          <button  disabled={isUploadeding} className="text-white disabled:bg-yellow-600 bg-yellow-400 hover:bg-yellow-500 focus:outline-none focus:ring-4 focus:ring-yellow-300 font-medium rounded-full text-sm px-5 py-2.5 text-center mr-2  dark:focus:ring-yellow-900">
             Tweet
           </button>
         </div>
