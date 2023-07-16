@@ -18,5 +18,5 @@ export default async function (
   const liked = await db
     .insert(likes)
     .values({ tweet_id: BigInt(tweet_id), username: user?.username });
-  revalidatePath("/");
+  revalidatePath("/ap");
 }

@@ -9,5 +9,5 @@ export default async function(username:string, tweet_id:string,Clikes:number ) {
 
     const tweetPost = await db.update(tweets).set({likes:Clikes-1 }).where(eq(tweets.id,BigInt(tweet_id)))
     const liked = await db.delete(likes).where(eq(likes.tweet_id,BigInt(tweet_id)))
-    revalidatePath("/")
+    revalidatePath("/ap")
 }

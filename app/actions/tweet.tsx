@@ -7,5 +7,5 @@ import {revalidatePath} from "next/cache"
 export default async function(username:string|null|undefined, tweet:string) {
 
     const tweetPost = await db.insert(tweets).values({content:tweet,username:username })
-    revalidatePath("/")
+    revalidatePath("/ap")
 }
