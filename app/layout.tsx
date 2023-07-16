@@ -48,7 +48,7 @@ export default function RootLayout({
       <html lang="en">
         <meta
           name="google-site-verification"
-          content={process.env.GOOGLE_SITE_VERIFICATION}
+          content={"Hfqc9pV2RUFW4MHhQr4KmRUnFuQ4TC4eVNit5Fis_h0"}
         />
         <body className={inter.className}>
           {modal}
