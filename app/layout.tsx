@@ -46,10 +46,7 @@ export default function RootLayout({
   return (
     <ClerkProvider>
       <html lang="en">
-        <meta
-          name="google-site-verification"
-          content={"Hfqc9pV2RUFW4MHhQr4KmRUnFuQ4TC4eVNit5Fis_h0"}
-        />
+      <meta name="google-site-verification" content="rxjXUQfb2q0XB-9D6w9YKSkm1m4JUHqDs6l8tgXCPuQ" />
         <body className={inter.className}>
           {modal}
           {children}
