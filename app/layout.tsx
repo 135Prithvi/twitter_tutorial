@@ -2,6 +2,7 @@ import "./globals.css";
 import { Inter } from "next/font/google";
 import { ClerkProvider } from "@clerk/nextjs";
 import { Metadata } from "next";
+import Script from "next/script";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
@@ -55,6 +56,12 @@ export default function RootLayout({
           {modal}
           {children}
         </body>
+        <Script
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2681030427493500"
+          crossOrigin="anonymous"
+          strategy="beforeInteractive"
+        />
       </html>
     </ClerkProvider>
   );
